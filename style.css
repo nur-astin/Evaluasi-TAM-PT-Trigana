@@ -1,0 +1,454 @@
+/* 1. RESET & DASAR */
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  transition: all 0.3s ease;
+}
+
+body {
+  margin: 0;
+  background-color: #f4f7f6;
+  overflow-x: hidden;
+}
+
+/* 2. LANDING PAGE (LOGIN & REGISTER) */
+.landing-page {
+  display: flex;
+  height: 100vh;
+}
+
+.hero {
+  flex: 1.2;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("https://images.unsplash.com/photo-1544016768-982d1554f0b9?q=80&w=1974&auto=format&fit=crop");
+  background-size: cover;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px;
+}
+
+.login-section {
+  flex: 0.8;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: white;
+}
+
+.form-box {
+  max-width: 400px;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+h2 {
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 25px;
+  font-size: 0.9rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="date"] {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #d32f2f;
+  box-shadow: 0 0 5px rgba(211, 47, 47, 0.2);
+}
+
+/* 3. TOMBOL UTAMA */
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+.btn-primary:hover {
+  background-color: #031240;
+  transform: scale(1.02);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.error-msg {
+  color: #d32f2f;
+  font-size: 0.85rem;
+  display: none;
+  margin-bottom: 10px;
+}
+
+.links {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #666;
+}
+.links a {
+  color: #d32f2f;
+  text-decoration: none;
+  font-weight: bold;
+}
+.links a:hover {
+  text-decoration: underline;
+}
+
+/* 4. NAVBAR & DROPDOWN */
+.navbar {
+  background: #2c3e50;
+  color: white;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+}
+
+.brand {
+  color: #e74c3c;
+  margin-right: 30px;
+  font-size: 1.2rem;
+}
+
+.dropdown {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.dropbtn {
+  color: white;
+  padding: 0 15px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  background-color: #ffffff;
+  min-width: 220px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+  z-index: 3000;
+  border-radius: 0 0 4px 4px;
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.dropdown-content a:hover {
+  background-color: #f8f9fa;
+  color: #d32f2f;
+  padding-left: 20px;
+}
+
+.dropdown:hover > .dropdown-content {
+  display: block;
+}
+.dropdown:hover .dropbtn {
+  background-color: #34495e;
+}
+
+.logout-btn {
+  margin-left: auto;
+  color: #ecf0f1;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 15px;
+  border-radius: 4px;
+}
+
+/* 5. KONTEN & CARD */
+.content {
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-top: 6px solid #d32f2f;
+  width: 100%;
+  max-width: 700px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* FIX #2: Kartu laporan rekap lebih lebar supaya tabel muat */
+#laporan-rekap {
+  max-width: 900px !important;
+  overflow-x: auto;
+}
+
+/* Tabel di dalam laporan rekap */
+#laporan-rekap table {
+  min-width: 750px;
+  font-size: 0.85rem;
+}
+
+#laporan-rekap table th,
+#laporan-rekap table td {
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+#laporan-rekap table td:last-child {
+  white-space: normal;
+  min-width: 90px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+/* Wrapper scroll untuk tabel di layar kecil */
+.table-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 4px;
+}
+
+/* 6. GOOGLE FORM STYLE (TAM) */
+.form-header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 20px;
+  border-radius: 8px 8px 0 0;
+  margin: -30px -30px 25px -30px;
+}
+
+.question-group {
+  background: #ffffff;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.question-text {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  line-height: 1.4;
+}
+
+.likert-scale {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.likert-scale label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.7rem;
+  cursor: pointer;
+  color: #7f8c8d;
+  flex: 1;
+}
+
+.likert-scale label span {
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+  color: #2c3e50;
+}
+
+.likert-scale input[type="radio"] {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  accent-color: #d32f2f;
+}
+
+.likert-scale label:hover span {
+  color: #d32f2f;
+}
+
+/* FIX #1: SLIDER FOTO — Sistem pergantian slide yang benar */
+.slider-container {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  border-radius: 10px;
+  margin-top: 20px;
+  background: #000;
+}
+
+/* Semua slide: tersembunyi secara default */
+.slide-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+  pointer-events: none;
+}
+
+/* Hanya slide aktif yang terlihat */
+.slide-card.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Foto di dalam slide mengisi penuh container */
+.slide-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Indikator dot di bawah slider */
+.slider-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.slider-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ccc;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.slider-dot.active {
+  background: #d32f2f;
+  transform: scale(1.2);
+}
+
+/* 7. PRINT STYLES */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .navbar {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+  .card {
+    box-shadow: none;
+    border: none;
+    max-width: 100% !important;
+  }
+  #laporan-rekap {
+    max-width: 100% !important;
+  }
+  #laporan-rekap table {
+    font-size: 0.75rem;
+  }
+}
+
+.print-only {
+  display: none;
+}
+
+/* 8. RESPONSIVE - Layar Kecil (HP) */
+@media (max-width: 768px) {
+  .landing-page {
+    flex-direction: column;
+  }
+  .hero {
+    padding: 40px 30px;
+    flex: none;
+    height: 40vh;
+  }
+  .login-section {
+    padding: 30px;
+    flex: none;
+  }
+  .content {
+    padding: 20px 15px;
+  }
+  .card {
+    padding: 20px;
+  }
+  .navbar {
+    padding: 0 10px;
+  }
+  .brand {
+    margin-right: 10px;
+    font-size: 1rem;
+  }
+  .dropbtn {
+    padding: 0 8px;
+    font-size: 0.85rem;
+  }
+  .slider-container {
+    height: 200px;
+  }
+
+  /* Tabel laporan scroll di HP */
+  #laporan-rekap {
+    padding: 15px;
+  }
+  #laporan-rekap table {
+    font-size: 0.75rem;
+  }
+}
