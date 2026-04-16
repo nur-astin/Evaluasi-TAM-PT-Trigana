@@ -1,0 +1,1253 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistem Kargo PT Trigana Air</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Alert & Notifikasi */
+      .alert-success {
+        background: #e8f5e9;
+        border-left: 5px solid #27ae60;
+        color: #1b5e20;
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-weight: bold;
+        margin-bottom: 14px;
+        animation: fadeIn 0.4s ease;
+      }
+      .alert-error {
+        background: #ffebee;
+        border-left: 5px solid #d32f2f;
+        color: #b71c1c;
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-weight: bold;
+        margin-bottom: 14px;
+      }
+      .alert-info {
+        background: #e3f2fd;
+        border-left: 5px solid #1565c0;
+        color: #0d47a1;
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-weight: bold;
+        margin-bottom: 14px;
+      }
+
+      /* Kartu Hasil TAM */
+      .tam-result-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin: 20px 0;
+      }
+      .tam-result-card {
+        text-align: center;
+        padding: 20px 12px;
+        border-radius: 12px;
+        background: #f8f9fa;
+        border: 2px solid #e0e0e0;
+      }
+      .tam-result-card .skor {
+        font-size: 2.4rem;
+        font-weight: 900;
+      }
+      .tam-result-card .label {
+        font-size: 0.85rem;
+        color: #555;
+        margin-top: 4px;
+      }
+      .tam-result-card .status {
+        font-size: 0.95rem;
+        font-weight: bold;
+        margin-top: 8px;
+      }
+      .tam-detail-bar {
+        margin: 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .tam-detail-bar .bar-key {
+        width: 55px;
+        font-size: 0.82rem;
+        color: #666;
+        flex-shrink: 0;
+      }
+      .bar-outer {
+        flex: 1;
+        height: 12px;
+        background: #e0e0e0;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .bar-inner {
+        height: 100%;
+        border-radius: 6px;
+        background: #2980b9;
+        transition: width 0.7s ease;
+      }
+      .bar-val {
+        width: 35px;
+        text-align: right;
+        font-size: 0.82rem;
+        font-weight: bold;
+        color: #333;
+        flex-shrink: 0;
+      }
+
+      /* Tabel Rekap */
+      .rekap-wrap {
+        overflow-x: auto;
+        border-radius: 6px;
+      }
+      .rekap-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 750px;
+        font-size: 0.85rem;
+      }
+      .rekap-table th {
+        background: #2c3e50;
+        color: white;
+        padding: 10px 12px;
+        white-space: nowrap;
+      }
+      .rekap-table td {
+        padding: 9px 12px;
+        text-align: center;
+        white-space: nowrap;
+      }
+      .rekap-table tr:nth-child(even) {
+        background: #f5f5f5;
+      }
+      .badge-level {
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+      .badge-admin {
+        background: #d32f2f;
+        color: white;
+      }
+      .badge-staf {
+        background: #1565c0;
+        color: white;
+      }
+
+      /* Card laporan lebih lebar */
+      #laporan-rekap {
+        max-width: 1100px !important;
+      }
+
+      /* Tabel SPIB */
+      .spib-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 0.85rem;
+      }
+      .spib-table th {
+        background: #d32f2f;
+        color: white;
+        padding: 9px 12px;
+      }
+      .spib-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid #eee;
+      }
+      .spib-table tr:nth-child(even) td {
+        background: #fafafa;
+      }
+    </style>
+
+    <div id="main-app" class="landing-page">
+      <div class="hero">
+        <h1>Selamat Datang</h1>
+        <p>
+          Sistem Informasi Pengiriman Barang (Kargo)<br />PT Trigana Air Service
+        </p>
+      </div>
+
+      <div class="login-section">
+        <!-- FORM LOGIN -->
+        <div id="login-box" class="form-box">
+          <h2>Log On</h2>
+          <p class="subtitle">
+            Gunakan ID dengan awalan <b>ADM</b> untuk Admin atau
+            <b>STF</b> untuk Staf.
+          </p>
+          <div id="login-alert" style="display: none"></div>
+          <input
+            type="text"
+            id="inp-id"
+            placeholder="ID Pegawai (ADM01 / STF01)"
+          />
+          <input type="text" id="inp-nama" placeholder="Nama Lengkap" />
+          <input type="password" id="inp-pass" placeholder="Password" />
+          <button class="btn-primary" onclick="doLogin()">Log On</button>
+          <div class="links">
+            <a href="#" onclick="showPage('register-box')">Create Account</a> |
+            <a href="#" onclick="alert('Hubungi IT Support')"
+              >Forgot Password</a
+            >
+          </div>
+        </div>
+
+        <!-- FORM REGISTER -->
+        <div id="register-box" class="form-box" style="display: none">
+          <h2>Create Account</h2>
+          <p class="subtitle">Daftarkan akun pegawai baru.</p>
+          <div id="reg-alert" style="display: none"></div>
+          <input type="text" id="reg-nama" placeholder="Nama Lengkap" />
+          <input
+            type="text"
+            id="reg-id"
+            placeholder="ID Pegawai (misal: STF02)"
+          />
+          <input type="password" id="reg-pass" placeholder="Password" />
+          <input
+            type="password"
+            id="reg-confirm"
+            placeholder="Ulangi Password"
+          />
+          <button class="btn-primary" onclick="doRegister()">
+            Register Account
+          </button>
+          <div class="links">
+            Sudah punya akun?
+            <a href="#" onclick="showPage('login-box')">Login</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+// DASHBOARD UTAMA
+    <div id="dashboard" style="display: none">
+      <!-- NAVBAR -->
+      <div class="navbar no-print">
+        <b class="brand">Trigana Air V.2</b>
+
+        <div class="dropdown">
+          <span class="dropbtn">File</span>
+          <div class="dropdown-content">
+            <a href="#" onclick="doLogout()">Log Off / Exit</a>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <span class="dropbtn" style="color: #f1c40f">Evaluasi TAM</span>
+          <div class="dropdown-content">
+            <a href="#" onclick="showDashPage('form-tam')"
+              >Isi Kuesioner Kepuasan</a
+            >
+            <a href="#" onclick="showDashPage('hasil-tam')"
+              >Lihat Rating Hasil</a
+            >
+          </div>
+        </div>
+
+        <div class="dropdown" id="nav-transaksi" style="display: none">
+          <span class="dropbtn">Transaksi</span>
+          <div class="dropdown-content">
+            <a href="#" onclick="showDashPage('form-spib')"
+              >Surat Pengiriman Barang</a
+            >
+          </div>
+        </div>
+
+        <div class="dropdown" id="nav-laporan" style="display: none">
+          <span class="dropbtn">Laporan</span>
+          <div class="dropdown-content">
+            <a href="#" onclick="showDashPage('laporan-rekap')"
+              >Rekapitulasi Evaluasi</a
+            >
+          </div>
+        </div>
+
+        <span
+          id="nav-user"
+          style="
+            margin-left: auto;
+            color: #aaa;
+            font-size: 0.88rem;
+            padding: 0 10px;
+          "
+        ></span>
+        <span class="logout-btn" onclick="doLogout()">Log Off</span>
+      </div>
+
+      <!-- KONTEN -->
+      <div class="content">
+        <!-- ── Dashboard Home ── -->
+        <div id="dash-home" class="card no-print" style="max-width: 900px">
+          <div class="form-header">
+            <h2>
+              Selamat Datang,
+              <span id="welcome-name" style="color: #f1c40f">User</span>!
+            </h2>
+            <p>PT Trigana Air Service – Branch Sentani, Jayapura</p>
+            <p id="welcome-sub" style="font-size: 0.85rem; opacity: 0.8"></p>
+          </div>
+          <div class="slider-container">
+            <div class="slide-card">
+              <img src="foto/t1.jpg" alt="Trigana 1" />
+            </div>
+            <div class="slide-card">
+              <img src="foto/t2.jpeg" alt="Trigana 2" />
+            </div>
+            <div class="slide-card">
+              <img src="foto/t3.jpg" alt="Trigana 3" />
+            </div>
+            <div class="slide-card">
+              <img src="foto/t4.jpg" alt="Trigana 4" />
+            </div>
+            <div class="slide-card">
+              <img src="foto/t5.jpg" alt="Trigana 5" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Form SPIB ── -->
+        <div id="form-spib" class="card" style="display: none; margin: 0 auto">
+          <div class="form-header" style="background: #d32f2f">
+            <h2>Input Surat Pengiriman Barang</h2>
+          </div>
+          <div id="spib-alert" style="display: none"></div>
+          <input type="text" id="spib-customer" placeholder="Kode Customer" />
+          <input type="text" id="spib-no" placeholder="No. SPIB" />
+          <input type="text" id="spib-bayar" placeholder="Type Pembayaran" />
+          <input type="text" id="spib-kategori" placeholder="Kategori Barang" />
+          <button class="btn-primary" onclick="doSimpanSPIB()">
+            Simpan Data
+          </button>
+
+          <div id="spib-tabel-wrap" style="display: none">
+            <h3 style="margin-top: 28px; color: #2c3e50">
+              Data Tersimpan Hari Ini
+            </h3>
+            <table class="spib-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Kode Customer</th>
+                  <th>No. SPIB</th>
+                  <th>Pembayaran</th>
+                  <th>Kategori</th>
+                  <th>Waktu</th>
+                </tr>
+              </thead>
+              <tbody id="spib-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── Form TAM ── -->
+        <div id="form-tam" class="card" style="display: none; margin: 0 auto">
+          <div class="form-header"><h2>Kuesioner Evaluasi TAM</h2></div>
+          <div id="tam-alert" style="display: none"></div>
+
+          <h3 style="color: #d32f2f">Variabel X1: Perceived Usefulness (PU)</h3>
+          <div id="soal-pu"></div>
+
+          <h3 style="color: #d32f2f">
+            Variabel X2: Perceived Ease of Use (PEOU)
+          </h3>
+          <div id="soal-peou"></div>
+
+          <button class="btn-primary" onclick="doKirimEvaluasi()">
+            Kirim Evaluasi
+          </button>
+        </div>
+
+        <!-- ── Hasil TAM ── -->
+        <div id="hasil-tam" class="card" style="display: none; margin: 0 auto">
+          <div class="form-header" style="background: #27ae60">
+            <h2>Hasil Evaluasi TAM Anda</h2>
+            <p id="hasil-user-info"></p>
+          </div>
+          <div id="hasil-content">
+            <p style="text-align: center; color: #888; padding: 30px">
+              Anda belum mengisi evaluasi.
+            </p>
+          </div>
+          <div
+            style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap"
+          >
+            <button
+              class="btn-primary"
+              onclick="showDashPage('form-tam')"
+              style="background: #2980b9"
+            >
+              Isi Ulang Evaluasi
+            </button>
+            <button
+              class="btn-primary"
+              onclick="window.print()"
+              style="background: #2c3e50"
+            >
+              Cetak Bukti
+            </button>
+            <button
+              class="btn-primary"
+              onclick="showDashPage('dash-home')"
+              style="background: #555"
+            >
+              Dashboard
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Laporan Rekap ── -->
+        <div
+          id="laporan-rekap"
+          class="card"
+          style="display: none; margin: 0 auto"
+        >
+          <div class="print-only header-laporan">
+            <center>
+              <h2>PT TRIGANA AIR SERVICE</h2>
+              <p>Sentani, Jayapura – Papua</p>
+              <hr />
+            </center>
+          </div>
+
+          <h2>1. Rekapitulasi Skor Evaluasi TAM</h2>
+          <p style="font-size: 0.85rem; color: #666">
+            Menampilkan seluruh pegawai yang telah mengisi evaluasi.
+          </p>
+          <div class="rekap-wrap">
+            <table class="rekap-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>ID Pegawai</th>
+                  <th>Nama Lengkap</th>
+                  <th>Level</th>
+                  <th>Rata-rata PU</th>
+                  <th>Rata-rata PEOU</th>
+                  <th>Kepuasan (US)</th>
+                  <th>Interpretasi</th>
+                  <th>Tanggal Isi</th>
+                </tr>
+              </thead>
+              <tbody id="rekap-tbody">
+                <tr>
+                  <td colspan="9" style="padding: 20px; color: #888">
+                    Belum ada data evaluasi.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 style="margin-top: 30px">2. Simulasi Uji Validitas (r-hitung)</h2>
+          <p style="font-size: 0.85rem">
+            Indikator dinyatakan <b>VALID</b> jika r-hitung > r-tabel (0.361
+            untuk N=30).
+          </p>
+          <table
+            border="1"
+            style="width: 100%; border-collapse: collapse; text-align: center"
+          >
+            <thead style="background: #2c3e50; color: white">
+              <tr>
+                <th>Indikator</th>
+                <th>r-hitung (Pearson)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>PU1 – PU5</td>
+                <td>0.842</td>
+                <td style="color: green; font-weight: bold">VALID</td>
+              </tr>
+              <tr>
+                <td>PEOU1 – PEOU5</td>
+                <td>0.795</td>
+                <td style="color: green; font-weight: bold">VALID</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 style="margin-top: 30px">
+            3. Uji Reliabilitas (Cronbach's Alpha)
+          </h2>
+          <div
+            style="
+              padding: 15px;
+              background: #e8f8f5;
+              border-left: 5px solid #27ae60;
+            "
+          >
+            <p>Nilai Cronbach's Alpha: <b>0.871</b></p>
+            <p>Status: <b style="color: #27ae60">RELIABEL</b> (Alpha > 0.70)</p>
+          </div>
+
+          <h2 style="margin-top: 30px">4. Hasil Pengujian Hipotesis & Model</h2>
+          <table
+            border="1"
+            style="width: 100%; border-collapse: collapse; text-align: center"
+          >
+            <thead style="background: #2c3e50; color: white">
+              <tr>
+                <th>Jenis Uji Statistik</th>
+                <th>Nilai Signifikansi</th>
+                <th>Interpretasi Hasil</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Uji t (Parsial)</b></td>
+                <td>0.012 (PU) & 0.008 (PEOU)</td>
+                <td style="color: green"><b>Signifikan</b> (< 0.05)</td>
+              </tr>
+              <tr>
+                <td><b>Uji F (Simultan)</b></td>
+                <td>0.000</td>
+                <td style="color: green"><b>Berpengaruh Serentak</b></td>
+              </tr>
+              <tr>
+                <td><b>Koefisien Determinasi (R²)</b></td>
+                <td>0.685</td>
+                <td><b>68.5%</b> Variasi Terjelaskan</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="print-only" style="margin-top: 50px; text-align: right">
+            <p>Jayapura, <span id="print-date"></span></p>
+            <br /><br /><br />
+            <p><b>( ____________________ )</b><br />Manager Operasional</p>
+          </div>
+          <button
+            class="btn-primary no-print"
+            onclick="window.print()"
+            style="background: #2c3e50; margin-top: 20px"
+          >
+            Cetak Laporan Lengkap
+          </button>
+        </div>
+      </div>
+      <!-- /content -->
+    </div>
+    <!-- /dashboard -->
+
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js"></script>
+    <script>
+
+// KONFIGURASI SOAL TAM
+      const SOAL_PU = [
+        "PU1. Apakah aplikasi kargo menyelesaikan pekerjaan lebih cepat?",
+        "PU2. Apakah aplikasi kargo meningkatkan efisiensi operasional pengiriman?",
+        "PU3. Apakah aplikasi kargo memberikan informasi pengiriman yang akurat dan berguna?",
+        "PU4. Apakah aplikasi kargo membantu dalam pengambilan keputusan?",
+        "PU5. Apakah aplikasi kargo bermanfaat bagi pekerjaan?",
+      ];
+      const SOAL_PEOU = [
+        "PEOU1. Apakah mudah dipelajari tanpa pelatihan khusus?",
+        "PEOU2. Apakah antarmuka mudah dipahami?",
+        "PEOU3. Apakah aplikasi dapat digunakan dengan langkah-langkah yang sederhana?",
+        "PEOU4. Apakah tidak ada kesulitan saat menggunakan fitur-fitur yang tersedia?",
+        "PEOU5. Apakah aplikasi stabil dan jarang mengalami kendala?",
+      ];
+      const LABEL_LIKERT = [
+        "Sangat Tidak Setuju",
+        "Tidak Setuju",
+        "Netral",
+        "Setuju",
+        "Sangat Setuju",
+      ];
+
+// STATE GLOBAL
+      let currentUser = null; // { id, nama, level }
+      let currentDashPage = "dash-home";
+
+      //  INIT — Render soal TAM saat halaman load
+      (function init() {
+        renderSoal("soal-pu", SOAL_PU, "pu");
+        renderSoal("soal-peou", SOAL_PEOU, "peou");
+
+        // Akun default jika localStorage kosong
+        if (!localStorage.getItem("users")) {
+          const defaults = [
+            {
+              id: "ADM01",
+              nama: "Administrator",
+              pass: md5("admin123"),
+              level: "admin",
+            },
+          ];
+          localStorage.setItem("users", JSON.stringify(defaults));
+        }
+      })();
+
+      //  HELPER — RENDER SOAL LIKERT
+      function renderSoal(containerId, soalArr, prefix) {
+        const wrap = document.getElementById(containerId);
+        wrap.innerHTML = soalArr
+          .map((soal, i) => {
+            const name = prefix + (i + 1);
+            const options = LABEL_LIKERT.map(
+              (lbl, j) => `
+      <label style="display:flex;flex-direction:column;align-items:center;
+                    font-size:.7rem;cursor:pointer;color:#7f8c8d;flex:1">
+        ${lbl}
+        <input type="radio" name="${name}" value="${j + 1}"
+               style="width:22px;height:22px;cursor:pointer;accent-color:#d32f2f;margin-top:6px"/>
+      </label>`,
+            ).join("");
+            return `
+      <div class="question-group">
+        <p>${soal}</p>
+        <div class="likert-scale">${options}</div>
+      </div>`;
+          })
+          .join("");
+      }
+
+      //  NAVIGASI HALAMAN LOGIN / REGISTER
+      function showPage(pageId) {
+        ["login-box", "register-box"].forEach((id) => {
+          document.getElementById(id).style.display =
+            id === pageId ? "block" : "none";
+        });
+      }
+
+      //  LOGIN
+      function doLogin() {
+        const id = document.getElementById("inp-id").value.trim().toUpperCase();
+        const nama = document.getElementById("inp-nama").value.trim();
+        const pass = document.getElementById("inp-pass").value;
+        const alertEl = document.getElementById("login-alert");
+
+        if (!id || !nama || !pass) {
+          showAlert(alertEl, "error", "Semua field wajib diisi.");
+          return;
+        }
+
+        const users = JSON.parse(localStorage.getItem("users") || "[]");
+        const found = users.find(
+          (u) =>
+            u.id === id &&
+            u.nama.toLowerCase() === nama.toLowerCase() &&
+            u.pass === md5(pass),
+        );
+
+        if (found) {
+          currentUser = { id: found.id, nama: found.nama, level: found.level };
+          masukDashboard();
+        } else {
+          showAlert(
+            alertEl,
+            "error",
+            "ID Pegawai, Nama, atau Password salah.",
+          );
+        }
+      }
+
+      //  REGISTER
+      function doRegister() {
+        const nama = document.getElementById("reg-nama").value.trim();
+        const id = document.getElementById("reg-id").value.trim().toUpperCase();
+        const pass = document.getElementById("reg-pass").value;
+        const confirm = document.getElementById("reg-confirm").value;
+        const alertEl = document.getElementById("reg-alert");
+
+        if (!nama || !id || !pass || !confirm) {
+          showAlert(alertEl, "error", "Semua field wajib diisi.");
+          return;
+        }
+        if (pass !== confirm) {
+          showAlert(
+            alertEl,
+            "error",
+            "Password dan konfirmasi tidak cocok.",
+          );
+          return;
+        }
+
+        const users = JSON.parse(localStorage.getItem("users") || "[]");
+        if (users.find((u) => u.id === id)) {
+          showAlert(
+            alertEl,
+            "error",
+            `ID "${id}" sudah terdaftar. Gunakan ID lain.`,
+          );
+          return;
+        }
+
+        const level = id.startsWith("ADM") ? "admin" : "staf";
+        users.push({ id, nama, pass: md5(pass), level });
+        localStorage.setItem("users", JSON.stringify(users));
+
+        // Kembali ke login dengan pesan sukses
+        showPage("login-box");
+        const loginAlert = document.getElementById("login-alert");
+        showAlert(
+          loginAlert,
+          "success",
+          `Akun karyawan "${nama}" (${id}) berhasil dibuat! Silakan login.`,
+        );
+        document.getElementById("inp-id").value = id;
+        document.getElementById("inp-nama").value = nama;
+      }
+
+      //  MASUK DASHBOARD
+      function masukDashboard() {
+        document.getElementById("main-app").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+
+        // Isi info navbar
+        document.getElementById("nav-user").textContent =
+          currentUser.nama + " (" + currentUser.level.toUpperCase() + ")";
+        document.getElementById("welcome-name").textContent = currentUser.nama;
+        document.getElementById("welcome-sub").textContent =
+          "Level: " +
+          currentUser.level.toUpperCase() +
+          "  |  ID: " +
+          currentUser.id;
+
+        // Tampilkan menu sesuai level
+        const isAdmin = currentUser.level === "admin";
+        document.getElementById("nav-transaksi").style.display = isAdmin
+          ? "flex"
+          : "none";
+        document.getElementById("nav-laporan").style.display = isAdmin
+          ? "flex"
+          : "none";
+
+        showDashPage("dash-home");
+        initSlider();
+      }
+
+      //  NAVIGASI HALAMAN DASHBOARD
+      const DASH_PAGES = [
+        "dash-home",
+        "form-spib",
+        "form-tam",
+        "hasil-tam",
+        "laporan-rekap",
+      ];
+
+      function showDashPage(pageId) {
+        DASH_PAGES.forEach((id) => {
+          document.getElementById(id).style.display =
+            id === pageId ? "block" : "none";
+        });
+        currentDashPage = pageId;
+
+        if (pageId === "hasil-tam") renderHasilTAM();
+        if (pageId === "laporan-rekap") renderRekap();
+        if (pageId === "form-spib") renderTabelSPIB();
+      }
+
+      //  LOGOUT
+      function doLogout() {
+        currentUser = null;
+        document.getElementById("dashboard").style.display = "none";
+        document.getElementById("main-app").style.display = "flex";
+        // Bersihkan form login
+        ["inp-id", "inp-nama", "inp-pass"].forEach(
+          (id) => (document.getElementById(id).value = ""),
+        );
+        document.getElementById("login-alert").style.display = "none";
+        showPage("login-box");
+      }
+
+      //  SIMPAN TRANSAKSI SPIB
+      function doSimpanSPIB() {
+        const customer = document.getElementById("spib-customer").value.trim();
+        const noSpib = document.getElementById("spib-no").value.trim();
+        const bayar = document.getElementById("spib-bayar").value.trim();
+        const kategori = document.getElementById("spib-kategori").value.trim();
+        const alertEl = document.getElementById("spib-alert");
+
+        if (!customer || !noSpib || !bayar || !kategori) {
+          showAlert(alertEl, "error", "Semua field wajib diisi.");
+          return;
+        }
+
+        const data = JSON.parse(localStorage.getItem("transaksi") || "[]");
+        data.push({
+          id: currentUser.id,
+          customer,
+          noSpib,
+          bayar,
+          kategori,
+          waktu: new Date().toLocaleString("id-ID"),
+        });
+        localStorage.setItem("transaksi", JSON.stringify(data));
+
+        showAlert(
+          alertEl,
+          "success",
+          `Data SPIB No. <b>${noSpib}</b> berhasil disimpan!`,
+        );
+
+        // Kosongkan form — TIDAK logout, tetap di halaman
+        ["spib-customer", "spib-no", "spib-bayar", "spib-kategori"].forEach(
+          (id) => {
+            document.getElementById(id).value = "";
+          },
+        );
+
+        renderTabelSPIB();
+      }
+
+      function renderTabelSPIB() {
+        const data = JSON.parse(
+          localStorage.getItem("transaksi") || "[]",
+        ).filter((d) => d.id === currentUser.id);
+        const tbody = document.getElementById("spib-tbody");
+        const wrap = document.getElementById("spib-tabel-wrap");
+
+        if (data.length === 0) {
+          wrap.style.display = "none";
+          return;
+        }
+        wrap.style.display = "block";
+        tbody.innerHTML = data
+          .map(
+            (d, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${d.customer}</td>
+      <td><b>${d.noSpib}</b></td>
+      <td>${d.bayar}</td>
+      <td>${d.kategori}</td>
+      <td style="font-size:.78rem">${d.waktu}</td>
+    </tr>`,
+          )
+          .join("");
+      }
+
+      //  KIRIM EVALUASI TAM
+      function doKirimEvaluasi() {
+        const alertEl = document.getElementById("tam-alert");
+        const keys = [
+          "pu1",
+          "pu2",
+          "pu3",
+          "pu4",
+          "pu5",
+          "peou1",
+          "peou2",
+          "peou3",
+          "peou4",
+          "peou5",
+        ];
+        const jawaban = {};
+
+        for (const k of keys) {
+          const el = document.querySelector(`input[name="${k}"]:checked`);
+          if (!el) {
+            showAlert(
+              alertEl,
+              "error",
+              "Semua pertanyaan wajib dijawab sebelum mengirim.",
+            );
+            return;
+          }
+          jawaban[k] = parseInt(el.value);
+        }
+
+        // Simpan ke localStorage (update jika sudah ada)
+        const evals = JSON.parse(localStorage.getItem("evaluasi") || "[]");
+        const idx = evals.findIndex((e) => e.id === currentUser.id);
+        const entry = {
+          id: currentUser.id,
+          nama: currentUser.nama,
+          level: currentUser.level,
+          tgl: new Date().toLocaleString("id-ID"),
+          ...jawaban,
+        };
+
+        if (idx >= 0) evals[idx] = entry;
+        else evals.push(entry);
+        localStorage.setItem("evaluasi", JSON.stringify(evals));
+
+        // Langsung tampilkan hasil — TIDAK logout
+        showDashPage("hasil-tam");
+      }
+
+      //  RENDER HASIL TAM
+      function renderHasilTAM() {
+        const evals = JSON.parse(localStorage.getItem("evaluasi") || "[]");
+        const data = evals.find((e) => e.id === currentUser.id);
+
+        document.getElementById("hasil-user-info").textContent =
+          currentUser.nama + " (" + currentUser.id + ")";
+
+        const wrap = document.getElementById("hasil-content");
+
+        if (!data) {
+          wrap.innerHTML = `<p style="text-align:center;color:#888;padding:30px">
+      Anda belum mengisi evaluasi. <a href="#" onclick="showDashPage('form-tam')">Isi sekarang</a></p>`;
+          return;
+        }
+
+        const avgPU =
+          (data.pu1 + data.pu2 + data.pu3 + data.pu4 + data.pu5) / 5;
+        const avgPEOU =
+          (data.peou1 + data.peou2 + data.peou3 + data.peou4 + data.peou5) / 5;
+        const avgUS = (avgPU + avgPEOU) / 2;
+
+        function interp(s) {
+          if (s >= 4.5) return ["Sangat Puas", "#27ae60"];
+          if (s >= 3.5) return ["Puas", "#2980b9"];
+          if (s >= 2.5) return ["Cukup Puas", "#f39c12"];
+          return ["Tidak Puas", "#d32f2f"];
+        }
+
+        const [lpu, wpu] = interp(avgPU);
+        const [lpeou, wpeou] = interp(avgPEOU);
+        const [lus, wus] = interp(avgUS);
+
+        const detail = {
+          PU1: data.pu1,
+          PU2: data.pu2,
+          PU3: data.pu3,
+          PU4: data.pu4,
+          PU5: data.pu5,
+          PEOU1: data.peou1,
+          PEOU2: data.peou2,
+          PEOU3: data.peou3,
+          PEOU4: data.peou4,
+          PEOU5: data.peou5,
+        };
+
+        const barHTML = Object.entries(detail)
+          .map(([k, v]) => {
+            const pct = (v / 5) * 100;
+            const w = v >= 4 ? "#27ae60" : v >= 3 ? "#f39c12" : "#d32f2f";
+            return `<div class="tam-detail-bar">
+      <span class="bar-key">${k}</span>
+      <div class="bar-outer"><div class="bar-inner" style="width:${pct}%;background:${w}"></div></div>
+      <span class="bar-val">${v}/5</span>
+    </div>`;
+          })
+          .join("");
+
+        let rekomendasi = "";
+        if (avgUS >= 4.5)
+          rekomendasi =
+            "Sistem dinilai <b>sangat memuaskan</b>. Pertahankan kualitas dan lakukan inovasi berkelanjutan.";
+        else if (avgUS >= 3.5)
+          rekomendasi =
+            "Sistem dinilai <b>memuaskan</b>. Ada beberapa aspek yang dapat ditingkatkan untuk mencapai kepuasan optimal.";
+        else if (avgUS >= 2.5)
+          rekomendasi =
+            "Sistem dinilai <b>cukup memuaskan</b>. Disarankan melakukan evaluasi dan perbaikan pada fitur utama.";
+        else
+          rekomendasi =
+            "Sistem perlu <b>perbaikan signifikan</b>. Segera lakukan evaluasi mendalam bersama tim IT.";
+
+        wrap.innerHTML = `
+    <div class="tam-result-grid">
+      <div class="tam-result-card">
+        <div class="label">Perceived Usefulness</div>
+        <div class="skor" style="color:${wpu}">${avgPU.toFixed(2)}</div>
+        <div class="status" style="color:${wpu}">${lpu}</div>
+      </div>
+      <div class="tam-result-card" style="border-color:#f1c40f;background:#fffde7">
+        <div class="label">User Satisfaction (Keseluruhan)</div>
+        <div class="skor" style="color:${wus};font-size:3rem">${avgUS.toFixed(2)}</div>
+        <div class="status" style="color:${wus}">${lus}</div>
+        <div style="font-size:.78rem;color:#888;margin-top:4px">dari skala 1–5</div>
+      </div>
+      <div class="tam-result-card">
+        <div class="label">Perceived Ease of Use</div>
+        <div class="skor" style="color:${wpeou}">${avgPEOU.toFixed(2)}</div>
+        <div class="status" style="color:${wpeou}">${lpeou}</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:24px;color:#2c3e50">Detail Jawaban per Indikator</h3>
+    ${barHTML}
+
+    <div style="margin-top:24px;padding:16px;background:#f4f7f6;border-radius:8px;border-left:5px solid ${wus}">
+      <b>Rekomendasi:</b><br/>${rekomendasi}
+    </div>
+    <p style="font-size:.8rem;color:#aaa;margin-top:12px">Diisi pada: ${data.tgl}</p>
+  `;
+
+        // Animasi bar
+        setTimeout(() => {
+          document
+            .querySelectorAll("#hasil-content .bar-inner")
+            .forEach((bar, i) => {
+              const target = bar.style.width;
+              bar.style.width = "0%";
+              bar.style.transition = "width .7s ease";
+              setTimeout(() => {
+                bar.style.width = target;
+              }, 80 * i);
+            });
+        }, 50);
+      }
+
+      //  RENDER LAPORAN REKAP (Admin)
+      function renderRekap() {
+        const evals = JSON.parse(localStorage.getItem("evaluasi") || "[]");
+        const tbody = document.getElementById("rekap-tbody");
+
+        if (evals.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="9" style="padding:20px;color:#888">Belum ada data evaluasi.</td></tr>';
+          return;
+        }
+
+        function interp(s) {
+          if (s >= 4.5) return ["Sangat Puas", "#27ae60"];
+          if (s >= 3.5) return ["Puas", "#2980b9"];
+          if (s >= 2.5) return ["Cukup Puas", "#f39c12"];
+          return ["Tidak Puas", "#d32f2f"];
+        }
+
+        tbody.innerHTML = evals
+          .map((e, i) => {
+            const avgPU = (e.pu1 + e.pu2 + e.pu3 + e.pu4 + e.pu5) / 5;
+            const avgPEOU =
+              (e.peou1 + e.peou2 + e.peou3 + e.peou4 + e.peou5) / 5;
+            const avgUS = (avgPU + avgPEOU) / 2;
+            const [lbl, warna] = interp(avgUS);
+            const badge = e.level === "admin" ? "badge-admin" : "badge-staf";
+            return `<tr>
+      <td>${i + 1}</td>
+      <td><b>${e.id}</b></td>
+      <td>${e.nama}</td>
+      <td><span class="badge-level ${badge}">${e.level.toUpperCase()}</span></td>
+      <td>${avgPU.toFixed(2)}</td>
+      <td>${avgPEOU.toFixed(2)}</td>
+      <td><b>${avgUS.toFixed(2)}</b></td>
+      <td style="color:${warna};font-weight:bold">${lbl}</td>
+      <td style="font-size:.78rem;white-space:normal;min-width:90px">${e.tgl}</td>
+    </tr>`;
+          })
+          .join("");
+      }
+
+      //  SLIDER — Init setelah dashboard muncul
+      function initSlider() {
+        const container = document.querySelector(".slider-container");
+        const slides = document.querySelectorAll(".slide-card");
+        if (!container || slides.length === 0) return;
+
+        // Hapus dots lama jika ada (mencegah duplikasi)
+        const oldDots = container.nextElementSibling;
+        if (oldDots && oldDots.classList.contains("slider-dots"))
+          oldDots.remove();
+
+        let cur = 0;
+        slides.forEach((s, i) => s.classList.toggle("active", i === 0));
+
+        const dotsWrap = document.createElement("div");
+        dotsWrap.className = "slider-dots";
+        slides.forEach((_, i) => {
+          const dot = document.createElement("div");
+          dot.className = "slider-dot" + (i === 0 ? " active" : "");
+          dot.onclick = () => {
+            goTo(i);
+            reset();
+          };
+          dotsWrap.appendChild(dot);
+        });
+        container.insertAdjacentElement("afterend", dotsWrap);
+
+        function goTo(idx) {
+          slides[cur].classList.remove("active");
+          dotsWrap.children[cur].classList.remove("active");
+          cur = idx;
+          slides[cur].classList.add("active");
+          dotsWrap.children[cur].classList.add("active");
+        }
+
+        let timer = setInterval(() => goTo((cur + 1) % slides.length), 3500);
+        function reset() {
+          clearInterval(timer);
+          timer = setInterval(() => goTo((cur + 1) % slides.length), 3500);
+        }
+
+        container.addEventListener("mouseenter", () => clearInterval(timer));
+        container.addEventListener("mouseleave", () => {
+          timer = setInterval(() => goTo((cur + 1) % slides.length), 3500);
+        });
+      }
+
+      //  HELPER — Tampilkan Alert
+      function showAlert(el, type, msg) {
+        el.className =
+          type === "success"
+            ? "alert-success"
+            : type === "info"
+              ? "alert-info"
+              : "alert-error";
+        el.innerHTML = msg;
+        el.style.display = "block";
+        if (type === "success")
+          setTimeout(() => {
+            el.style.display = "none";
+          }, 5000);
+      }
+
+      //  MD5 — Hash sederhana untuk simulasi password
+      //  (Bukan untuk keamanan produksi, hanya demo)
+      function md5(str) {
+        function safeAdd(x, y) {
+          var lsw = (x & 0xffff) + (y & 0xffff);
+          var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+          return (msw << 16) | (lsw & 0xffff);
+        }
+        function bitRotateLeft(num, cnt) {
+          return (num << cnt) | (num >>> (32 - cnt));
+        }
+        function md5cmn(q, a, b, x, s, t) {
+          return safeAdd(
+            bitRotateLeft(safeAdd(safeAdd(a, q), safeAdd(x, t)), s),
+            b,
+          );
+        }
+        function md5ff(a, b, c, d, x, s, t) {
+          return md5cmn((b & c) | (~b & d), a, b, x, s, t);
+        }
+        function md5gg(a, b, c, d, x, s, t) {
+          return md5cmn((b & d) | (c & ~d), a, b, x, s, t);
+        }
+        function md5hh(a, b, c, d, x, s, t) {
+          return md5cmn(b ^ c ^ d, a, b, x, s, t);
+        }
+        function md5ii(a, b, c, d, x, s, t) {
+          return md5cmn(c ^ (b | ~d), a, b, x, s, t);
+        }
+        function md5blks(s) {
+          var i,
+            b = [];
+          for (i = 0; i < 64; i += 4)
+            b[i >> 2] =
+              s.charCodeAt(i) +
+              (s.charCodeAt(i + 1) << 8) +
+              (s.charCodeAt(i + 2) << 16) +
+              (s.charCodeAt(i + 3) << 24);
+          return b;
+        }
+        str = unescape(encodeURIComponent(str));
+        var bs = str.length,
+          p = [],
+          i,
+          a,
+          b,
+          c,
+          d,
+          ol = bs >> 6;
+        for (i = 0; i < ol; i++)
+          p.push(md5blks(str.slice(i * 64, i * 64 + 64)));
+        str = str.slice(ol * 64);
+        var tail = new Array(16);
+        for (i = 0; i < str.length; i++)
+          tail[i >> 2] |= str.charCodeAt(i) << ((i % 4) * 8);
+        tail[str.length >> 2] |= 0x80 << ((str.length % 4) * 8);
+        if (str.length > 55) {
+          p.push(tail);
+          tail = new Array(16);
+        }
+        tail[14] = bs * 8;
+        p.push(tail);
+        a = 1732584193;
+        b = -271733879;
+        c = -1732584194;
+        d = 271733878;
+        for (i = 0; i < p.length; i++) {
+          var oA = a,
+            oB = b,
+            oC = c,
+            oD = d,
+            M = p[i];
+          a = md5ff(a, b, c, d, M[0], 7, -680876936);
+          d = md5ff(d, a, b, c, M[1], 12, -389564586);
+          c = md5ff(c, d, a, b, M[2], 17, 606105819);
+          b = md5ff(b, c, d, a, M[3], 22, -1044525330);
+          a = md5ff(a, b, c, d, M[4], 7, -176418897);
+          d = md5ff(d, a, b, c, M[5], 12, 1200080426);
+          c = md5ff(c, d, a, b, M[6], 17, -1473231341);
+          b = md5ff(b, c, d, a, M[7], 22, -45705983);
+          a = md5ff(a, b, c, d, M[8], 7, 1770035416);
+          d = md5ff(d, a, b, c, M[9], 12, -1958414417);
+          c = md5ff(c, d, a, b, M[10], 17, -42063);
+          b = md5ff(b, c, d, a, M[11], 22, -1990404162);
+          a = md5ff(a, b, c, d, M[12], 7, 1804603682);
+          d = md5ff(d, a, b, c, M[13], 12, -40341101);
+          c = md5ff(c, d, a, b, M[14], 17, -1502002290);
+          b = md5ff(b, c, d, a, M[15], 22, 1236535329);
+          a = md5gg(a, b, c, d, M[1], 5, -165796510);
+          d = md5gg(d, a, b, c, M[6], 9, -1069501632);
+          c = md5gg(c, d, a, b, M[11], 14, 643717713);
+          b = md5gg(b, c, d, a, M[0], 20, -373897302);
+          a = md5gg(a, b, c, d, M[5], 5, -701558691);
+          d = md5gg(d, a, b, c, M[10], 9, 38016083);
+          c = md5gg(c, d, a, b, M[15], 14, -660478335);
+          b = md5gg(b, c, d, a, M[4], 20, -405537848);
+          a = md5gg(a, b, c, d, M[9], 5, 568446438);
+          d = md5gg(d, a, b, c, M[14], 9, -1019803690);
+          c = md5gg(c, d, a, b, M[3], 14, -187363961);
+          b = md5gg(b, c, d, a, M[8], 20, 1163531501);
+          a = md5gg(a, b, c, d, M[13], 5, -1444681467);
+          d = md5gg(d, a, b, c, M[2], 9, -51403784);
+          c = md5gg(c, d, a, b, M[7], 14, 1735328473);
+          b = md5gg(b, c, d, a, M[12], 20, -1926607734);
+          a = md5hh(a, b, c, d, M[5], 4, -378558);
+          d = md5hh(d, a, b, c, M[8], 11, -2022574463);
+          c = md5hh(c, d, a, b, M[11], 16, 1839030562);
+          b = md5hh(b, c, d, a, M[14], 23, -35309556);
+          a = md5hh(a, b, c, d, M[1], 4, -1530992060);
+          d = md5hh(d, a, b, c, M[4], 11, 1272893353);
+          c = md5hh(c, d, a, b, M[7], 16, -155497632);
+          b = md5hh(b, c, d, a, M[10], 23, -1094730640);
+          a = md5hh(a, b, c, d, M[13], 4, 681279174);
+          d = md5hh(d, a, b, c, M[0], 11, -358537222);
+          c = md5hh(c, d, a, b, M[3], 16, -722521979);
+          b = md5hh(b, c, d, a, M[6], 23, 76029189);
+          a = md5hh(a, b, c, d, M[9], 4, -640364487);
+          d = md5hh(d, a, b, c, M[12], 11, -421815835);
+          c = md5hh(c, d, a, b, M[15], 16, 530742520);
+          b = md5hh(b, c, d, a, M[2], 23, -995338651);
+          a = md5ii(a, b, c, d, M[0], 6, -198630844);
+          d = md5ii(d, a, b, c, M[7], 10, 1126891415);
+          c = md5ii(c, d, a, b, M[14], 15, -1416354905);
+          b = md5ii(b, c, d, a, M[5], 21, -57434055);
+          a = md5ii(a, b, c, d, M[12], 6, 1700485571);
+          d = md5ii(d, a, b, c, M[3], 10, -1894986606);
+          c = md5ii(c, d, a, b, M[10], 15, -1051523);
+          b = md5ii(b, c, d, a, M[1], 21, -2054922799);
+          a = md5ii(a, b, c, d, M[8], 6, 1873313359);
+          d = md5ii(d, a, b, c, M[15], 10, -30611744);
+          c = md5ii(c, d, a, b, M[6], 15, -1560198380);
+          b = md5ii(b, c, d, a, M[13], 21, 1309151649);
+          a = md5ii(a, b, c, d, M[4], 6, -145523070);
+          d = md5ii(d, a, b, c, M[11], 10, -1120210379);
+          c = md5ii(c, d, a, b, M[2], 15, 718787259);
+          b = md5ii(b, c, d, a, M[9], 21, -343485551);
+          a = safeAdd(a, oA);
+          b = safeAdd(b, oB);
+          c = safeAdd(c, oC);
+          d = safeAdd(d, oD);
+        }
+        function hex(n) {
+          var s = "",
+            v;
+          for (var i = 0; i < 4; i++) {
+            v = (n >>> (i * 8)) & 0xff;
+            s += ("0" + v.toString(16)).slice(-2);
+          }
+          return s;
+        }
+        return hex(a) + hex(b) + hex(c) + hex(d);
+      }
+    </script>
+  </body>
+</html>
